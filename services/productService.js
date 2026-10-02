@@ -32,12 +32,57 @@ async function getProductById(id) {
 async function createProduct(product) {
     let products= await readData()
     products.push(product)
-    await writeProduct()
+    await writeProduct(products)
     return product
+}
+async function updateProduct(id,updateProduct){
+    let products= await readData()
+    let index=products.findIndex( item => item.id==id)
+
+    if (index==-1){
+        return null
+    }
+    products[index]={
+        ...products[index],...updateProduct,id
+    }
+
+    await writeProduct(products)
+
+    return products[index]
+}
+async function patchProduct(id,updateProduct){
+    let products= await readData()
+    let index=products.findIndex( item => item.id==id)
+
+    if (index==-1){
+        return null
+    }
+    products[index]={
+        ...products[index],...updateProduct,id
+    }
+
+    await writeProduct(products)
+
+    return products[index]
+}
+
+async function deleteProduct(id) {
+    let products = await readData()
+    let index = products.findIndex(item => item.id == id)
+    if (index === -1) {
+        return null
+    }
+    let deletedProduct = products[index]
+    products.splice(index, 1)
+    await writeProduct(products)
+    return deletedProduct
 }
 
 module.exports={
     getProducts,
     getProductById,
-    createProduct
+    createProduct,
+    updateProduct,
+    patchProduct,
+    deleteProduct
 }

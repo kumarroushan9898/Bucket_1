@@ -56,9 +56,74 @@ const createProduct = async (req,res)=>{
     }
 }
 
+const updateProduct = async (req, res) => {
+    try {
+        let id = Number(req.params.id)
+        let updatedProduct = await productService.updateProduct(id,req.body)
+
+        if (!updatedProduct) {
+            return res.status(404).json({message: "Product not found"})
+        }
+        clearCache()
+        res.status(200).json(updatedProduct)
+
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(500).json({
+            message: "Something went wrong"
+        })
+    }
+}
+
+const patchProduct = async (req, res) => {
+    try {
+        let id = Number(req.params.id)
+        let updatedProduct = await productService.patchProduct(id,req.body)
+
+        if (!updatedProduct) {
+            return res.status(404).json({message: "Product not found"})
+        }
+        clearCache()
+        res.status(200).json(updatedProduct)
+
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(500).json({
+            message: "Something went wrong"
+        })
+    }
+}
+const deleteProduct = async(req,res) =>{
+    try {
+        let id = Number(req.params.id)
+        let deletedProduct = await productService.deleteProduct(id)
+        if (!deletedProduct) {
+            return res.status(404).json({
+                message: "Product not found"
+            })
+        }
+        clearCache()
+        res.status(200).json({
+            message: "Product deleted successfully",
+            product: deletedProduct
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "Something went wrong"
+        })
+    }
+}
 
 module.exports = { 
     getProducts,
     getProductById,
-    createProduct
+    createProduct,
+    updateProduct,
+    patchProduct,
+    deleteProduct
 }

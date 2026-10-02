@@ -31,9 +31,11 @@ async function getProductById(id) {
 
 async function createProduct(product) {
     let products= await readData()
-    products.push(product)
+    let { name, price } = product
+    let newProduct = { id: products.length + 1, name, price}
+    products.push(newProduct)
     await writeProduct(products)
-    return product
+    return newProduct
 }
 async function updateProduct(id,updateProduct){
     let products= await readData()

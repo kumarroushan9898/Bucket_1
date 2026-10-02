@@ -2,29 +2,18 @@ const fs = require("fs/promises")
 const path = require("path")
 const express =require("express")
 const pathToFile=path.join(__dirname,"./database/db.json")
+const {cache,cacheMiddleware} = require("./middleware/cacheMiddleware.js")
 
 const app=express();
-let cache = {}
-const CACHE_TTL = 60 * 1000;
 
 async function readData (){
     let data =await fs.readFile(pathToFile,"utf8")
     return JSON.parse(data)
 }
 
-app.get('/products', async (req,res)=>{
+app.get('/products',cacheMiddleware, async (req,res)=>{
     try{
         let key=req.url
-        let cacheData = cache[key]
-        if (cacheData){
-            let age = Date.now() - cacheData.createdAt
-            if (age < CACHE_TTL){
-                res.set("X-Cache", "HIT")
-                return res.json(cacheData.value)
-            }
-            delete cache[key]   
-        }
-        res.set("X-Cache", "MISS")
         let products =await dealyReadData()
         cache[key]={
             "value":products,
@@ -39,22 +28,15 @@ app.get('/products', async (req,res)=>{
     
 })
 
-app.get('/products/:id', async (req,res)=>{
+app.get('/products/:id',cacheMiddleware, async (req,res)=>{
     try{
         let key=req.url
-        let cacheData = cache[key]
-        if (cacheData){
-            let age = Date.now() - cacheData.createdAt
-            if (age < CACHE_TTL){
-                res.set("X-Cache", "HIT")
-                return res.json(cacheData.value)
-            }
-            delete cache[key]   
-        }
-        res.set("X-Cache", "MISS")
         let products =await dealyReadData()
         let id=Number(req.params.id)
         const product=products.find(item => item.id==id)
+        if (!product) {
+            return res.status(404).json({message: "Product not found"})
+        }
         cache[key]={
             "value":product,
             "createdAt" : Date.now()

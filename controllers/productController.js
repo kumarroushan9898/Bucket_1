@@ -1,5 +1,5 @@
 const productService = require("../services/productService.js")
-const {cache} = require("../middleware/cacheMiddleware.js")
+const {cache,clearCache} = require("../middleware/cacheMiddleware.js")
 
 const getProducts = async (req,res) => {
     try {
@@ -42,9 +42,23 @@ const getProductById = async (req, res) => {
         })
     }
 }
+const createProduct = async (req,res)=>{
+    try{
+        let product = req.body;
+        let newProduct = await productService.createProduct(product)
+        clearCache()
+        res.status(201).json(newProduct)
+    }catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "Something went wrong"
+        })
+    }
+}
 
 
 module.exports = { 
     getProducts,
-    getProductById
+    getProductById,
+    createProduct
 }

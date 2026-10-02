@@ -14,6 +14,10 @@ async function dealyReadData() {
     return readData()
 }
 
+async function writeProduct(products){
+    await fs.writeFile(pathToFile,JSON.stringify(products,null,2))
+}
+
 async function getProducts() {
     let products= await dealyReadData()
     return products
@@ -25,7 +29,15 @@ async function getProductById(id) {
     return product
 }
 
+async function createProduct(product) {
+    let products= await readData()
+    products.push(product)
+    await writeProduct()
+    return product
+}
+
 module.exports={
     getProducts,
-    getProductById
+    getProductById,
+    createProduct
 }

@@ -17,4 +17,8 @@ function cacheMiddleware(req, res, next) {
         next()
 }
 
-module.exports = {cache,cacheMiddleware}
+function clearCache(){
+    cache={}
+}
+
+module.exports = {cache,cacheMiddleware,clearCache}
